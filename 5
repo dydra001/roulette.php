@@ -1,0 +1,331 @@
+<?php
+/*
+Template Name: Custom 5 Mart Template
+*/
+get_header();
+
+$page_slug = get_post_field('post_name', get_post());
+
+if ($page_slug === '5-mart') {
+    ?>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 80%;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+
+    <h2>5-MART</h2>
+    <h4>The new roulette strategy developed by mydydra.com</h4>
+
+    <div id="session-controls">
+        <button id="begin-session" onclick="beginSession()">Begin New Session</button>
+        <button id="end-session" style="display:none;" onclick="endSession()">End Session Now</button>
+    </div>
+
+    <div id="budget-form" style="display:none;">
+        <label for="user-budget">Enter Your Budget:</label>
+        <input type="number" id="user-budget" required>
+        <button onclick="submitBudget()">Submit</button>
+    </div>
+
+    <div id="initial-bet" style="display:none;">
+        <p id="budget-advice"></p>
+        <p>Enter your chosen initial bet:</p>
+        <input type="number" id="chosen-bet" required>
+        <button onclick="submitInitialBet()">Submit</button>
+    </div>
+
+    <div id="enter-number" style="display:none;">
+        <label for="user-number">Enter Your Number:</label>
+        <input type="number" id="user-number" required>
+        <button onclick="submitNumber()">Submit</button>
+    </div>
+    
+    
+<div id="roulette-output"></div>
+
+    <div id="bet-results" style="display:none;">
+        <p id="bet-message"></p>
+        <table id="number-table">
+            <thead>
+                <tr>
+                    <th>Number</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        let userBudget;
+        let currentBetOption;
+        let enteredNumbers = [];
+
+        function beginSession() {
+            document.getElementById('begin-session').style.display = 'none';
+            document.getElementById('end-session').style.display = 'inline-block';
+            document.getElementById('budget-form').style.display = 'block';
+        }
+
+        function endSession() {
+            document.getElementById('begin-session').style.display = 'inline-block';
+            document.getElementById('end-session').style.display = 'none';
+            document.getElementById('budget-form').style.display = 'none';
+            document.getElementById('initial-bet').style.display = 'none';
+            document.getElementById('enter-number').style.display = 'none';
+            document.getElementById('bet-results').style.display = 'none';
+            resetSession();
+        }
+
+        function submitBudget() {
+            userBudget = document.getElementById('user-budget').value;
+            document.getElementById('budget-form').style.display = 'none';
+            let budgetAdvice = userBudget / 4072;
+            document.getElementById('budget-advice').innerHTML = "We advise your maximum initial bet: " + budgetAdvice.toFixed(1);
+            document.getElementById('initial-bet').style.display = 'block';
+        }
+
+        function submitInitialBet() {
+            currentBetOption = document.getElementById('chosen-bet').value;
+            document.getElementById('initial-bet').style.display = 'none';
+            document.getElementById('enter-number').style.display = 'block';
+        }
+
+        function submitNumber() {
+    // Get the user number from the input field
+    let userNumber = document.getElementById('user-number').value;
+    // Push the user number to the enteredNumbers array
+    enteredNumbers.push(userNumber);
+    // Clear the input field
+    document.getElementById('user-number').value = '';
+    // Generate the number table HTML
+    document.getElementById('number-table').getElementsByTagName('tbody')[0].innerHTML = generateNumberTable();
+    // Show the bet results div
+    document.getElementById('bet-results').style.display = 'block';
+    // Simulate the rounds and show the bet message
+    document.getElementById('bet-message').innerHTML = simulateRounds(userNumber);
+    // Hide the enter number div
+    document.getElementById('enter-number').style.display = 'none';
+    // Ask the user for the bet number using the prompt function
+    let betNumber = prompt("Enter your bet number:");
+    // Execute the JavaScript code from the roulette.js file
+    // Use the betNumber variable as the input
+    roulette(betNumber);
+}
+
+// Define a function called roulette that takes a bet number as an argument
+function roulette(betNumber) {
+    let tab = [
+        [1,1,1,1,1],
+        [1,1,1,1,1],
+        [1,1,1,1,1],
+        [1,1,1,1,1],
+        [1,1,1,1,1],
+        [1,1,1,1,1],
+        [1,1,1,1,1],
+        [1,1,1,1,1],
+        [1,1,1,1,1],
+        [1,1,1,1,1]
+    ];
+    let ib = 1;
+    let b;
+    let c;
+    let cb = 'n';
+    let n, i, j;
+    let d;
+
+    while (true) {
+        for(j=0; j<5;j++){
+            // read number 
+            // Use the document.write() function instead of the console.log() function
+            // Add some HTML tags to format the messages
+            document.write(`<p>Donnez le ${j} nombre  : </p>`);
+            // Use the betNumber variable instead of the prompt function
+            n = betNumber;
+            // read number	
+            // read color
+            if(n==0){
+                c='G';
+            }   
+            if([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36].includes(n)){
+                c='R';
+            }
+            if([2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35].includes(n)){
+                c='B'; 
+            } 
+            // read color	
+            document.write(`<p>the color is ${c}  : </p>`);
+            document.write("<br>");	
+            //verify last bet 
+            if(cb=='n'){
+                for(i=0;i<10;i++){
+                    tab[i][4]=1;
+                }
+                cb=c;
+                document.write(`<p>the bet color is ${cb}  : </p>`);
+                document.write("<br>");		
+            }
+            else{
+                if(c=='G'){
+                    if(j==0){
+                        if((tab[0][4]==1)&&(tab[1][4]==1)){
+                            tab[0][4]=0; 
+                        }
+                        else{
+                            for(i=0;i<10;i++){
+                                if((tab[i][4]==0)&&(tab[i+1][4]==1)){
+                                    tab[i+1][4]=0;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        if((tab[0][j-1]==1)&&(tab[1][j-1]==1)){
+                            tab[0][j-1]=0; 
+                        }
+                        else{
+                            for(i=0;i<10;i++){
+                                if((tab[i][j-1]==0)&&(tab[i+1][j-1]==1)){
+                                    tab[i+1][j-1]=0;
+                                    break;
+                                }
+                            }	
+                        }
+                    }
+                    document.write(`<p>the bet color is ${cb}  : </p>`);
+                    document.write("<br>");
+                }
+                else{
+                    if(cb==c){
+                        if(j==0){
+                            for(i=0;i<10;i++){
+                                tab[i][4]=1;
+                            }	
+                        }
+                        else{
+                            for(i=0;i<10;i++){
+                                tab[i][j-1]=1;
+                            }		
+                        }
+                        cb=c;
+                        document.write(`<p>the bet color is ${cb}  : </p>`);
+                        document.write("<br>");
+                    }
+                    else{
+                        if(cb!=c){
+                            if(j==0){
+                                if((tab[0][4]==1)&&(tab[1][4]==1)){
+                                    tab[0][4]=0; 
+                                }
+                                else{
+                                    for(i=0;i<10;i++){
+                                        if((tab[i][4]==0)&&(tab[i+1][4]==1)){
+                                            tab[i+1][4]=0;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }	
+                            else{
+                                if((tab[0][j-1]==1)&&(tab[1][j-1]==1)){
+                                    tab[0][j-1]=0; 
+                                }
+                                else{
+                                    for(i=0;i<10;i++){
+                                        if((tab[i][j-1]==0)&&(tab[i+1][j-1]==1)){
+                                            tab[i+1][j-1]=0;
+                                            break;
+                                        }
+                                    }	
+                                }
+                            }
+                            cb=c;
+                            document.write(`<p>the bet color is ${cb}  : </p>`);
+                            document.write("<br>");
+                        }
+                    }
+                }	
+            }
+            //verify last bet 
+            b=ib;
+            if(tab[0][j]==1){
+                b=b;
+            }
+            else{
+                i=0;
+                while(tab[i][j]!=1){
+                    b=b*2+ib;
+                    i++;
+                }			
+            }
+            document.write(`<p>the bet is ${b.toFixed(1)}  : </p>`);
+            document.write("<br>");
+            //verify last bet
+            // Display the table
+            // Use the document.write() function instead of the console.log() function
+            // Add some HTML tags to format the table
+            document.write("<table>");
+            for (let i = 0; i < 10; ++i) {
+                document.write("<tr>");
+                for (let k = 0; k < 5; ++k) {
+                    document.write(`<td>${tab[i][k]}</td>`);
+                }
+                document.write("</tr>");
+            }
+            document.write("</table>");
+            // Display the table
+        }
+    }
+}
+
+
+
+
+
+
+        function generateNumberTable() {
+            let tableHTML = '';
+            enteredNumbers.forEach(number => {
+                tableHTML += '<tr><td>' + number + '</td></tr>';
+            });
+            return tableHTML;
+        }
+
+        function resetSession() {
+            userBudget = null;
+            currentBetOption = null;
+            enteredNumbers = [];
+            document.getElementById('user-budget').value = '';
+            document.getElementById('chosen-bet').value = '';
+            document.getElementById('user-number').value = '';
+            document.getElementById('number-table').getElementsByTagName('tbody')[0].innerHTML = '';
+            document.getElementById('budget-advice').innerHTML = '';
+            document.getElementById('bet-message').innerHTML = '';
+        }
+      
+
+    </script>
+    
+ <?php
+} else {
+    echo '<p>This is not the Strategies page.</p>';
+}
+
+get_footer();
+?>
